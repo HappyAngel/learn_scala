@@ -1,6 +1,7 @@
 package happyangel.learn.scala.common
 
-import happyangel.learn.scala.common.Element
+import Element.elem
+
 /**
   * Created by xionglei on 17-6-23.
   *
@@ -70,5 +71,16 @@ class ExprFormatter {
     }
 
     def format(e: Expr): Element = format(e, 0)
+}
+
+object Express extends App {
+    val f = new ExprFormatter
+
+    val e1 = BinOp("*", BinOp("/", Number(1), Number(2)),
+        BinOp("+", Var("x"), Number(1)))
+
+    def show(e: Expr) = println(f.format(e) + "\n\n")
+
+    for (e <- Array(e1)) show(e)
 }
 
