@@ -129,15 +129,3 @@ object MySimulation extends CircuitSimulation {
     override def OrGateDelay: Int = 5
 }
 
-object Test extends App {
-    import MySimulation._
-
-    val input1, input2, sum, carry = new Wire
-    probe("sum", sum)
-    probe("carry", carry)
-    halfAdder(input1, input2, sum, carry)
-
-    input1 setSignal true
-    input2 setSignal true
-    run()
-}
