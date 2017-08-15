@@ -2,6 +2,7 @@ package happyangel.learn.scala.common
 
 import sun.security.util.Length
 
+import scala.collection.generic.CanBuildFrom
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.{IndexedSeqLike, mutable}
 
@@ -34,7 +35,8 @@ object Base {
 // method should return the same type as its input
 final class RNA2 private(val groups: Array[Int], val length: Int) extends IndexedSeq[Base] with IndexedSeqLike[Base, RNA2] {
   import RNA2._
-  override def newBuilder: mutable.Builder[Base, RNA2] = new ArrayBuffer[Base] mapResult fromSeq
+
+  override protected[this] def newBuilder: mutable.Builder[Base, RNA2] = RNA2.newBuilder
 
   def apply(idx: Int): Base = {
         if (idx < 0 || length <= idx) {
@@ -60,4 +62,10 @@ object RNA2 {
   }
 
   def apply(bases: Base*) = fromSeq(bases)
+
+  def newBuilder: mutable.Builder[Base, RNA2] = new ArrayBuffer[Base] mapResult fromSeq
+  implicit def canBuildFrom: CanBuildFrom[RNA2, Base, RNA2] = new CanBuildFrom[RNA2, Base, RNA2] {
+    def apply() = newBuilder
+    def apply(from: RNA2) = newBuilder
+  }
 }
