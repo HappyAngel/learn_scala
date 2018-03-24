@@ -10,7 +10,16 @@ object LearnScala extends Build {
                     )
                 )
 
+        lazy val redisLearnProj = Project("RedisLearn", file("RedisLearn"))
+                  .settings(
+                    name  := "RedisLearn",
+                    libraryDependencies ++= Seq(
+                      "biz.paluch.redis" % "lettuce" % "4.4.0.Final"
+                    )
+                  )
+
     lazy val learn_scala_all = (project in file("."))
             .aggregate(`commonProj`)
+            .aggregate(`redisLearnProj`)
 
 }
