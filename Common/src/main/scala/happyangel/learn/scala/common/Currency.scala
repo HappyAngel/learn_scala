@@ -1,5 +1,13 @@
 package happyangel.learn.scala.common
 
+import java.security.MessageDigest
+import java.util.Base64
+
+import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper, PropertyNamingStrategy}
+import com.google.gson.{Gson, GsonBuilder}
+import net.sf.json.JSONObject
+import play.api.libs.json.{JsObject, Json}
+
 /**
   * Created by happyangel on 2017/7/15.
   *
@@ -87,7 +95,19 @@ object Converter {
     )
 }
 
-object test extends App {
-    println(US.Dollar from Europe.Euro)
+object test1 extends App {
+    val ll = List("1","2")
+
+    println("3" :: ll)
+}
+
+class TestClass {
+    var idd = ""
+    def setId(id: String): TestClass = {
+        idd = id
+        this
+    }
+
+    override def toString: String = idd
 }
 

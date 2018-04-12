@@ -6,7 +6,10 @@ object LearnScala extends Build {
                 .settings(
                     name := "Common",
                     libraryDependencies ++= Seq(
-                        "com.google.code.gson" % "gson" % "2.3.1"
+                        "com.google.code.gson" % "gson" % "2.3.1",
+                        "commons-codec" % "commons-codec" % "1.10",
+                        "com.typesafe.play" %% "play-json" % "2.5.4",
+                        "net.sf.json-lib" % "json-lib" % "2.2.3"
                     )
                 )
 

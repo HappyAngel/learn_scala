@@ -129,7 +129,7 @@ object MySimulation extends CircuitSimulation {
     override def OrGateDelay: Int = 5
 }
 
-object Test extends App {
+object Test22 extends App {
     import MySimulation._
 
     val input1, input2, sum, carry = new Wire
