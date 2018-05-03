@@ -35,16 +35,14 @@ object Chapter3 extends App {
   def dropWhile[T](ll: List[T], f: T => Boolean): List[T] = {
     def dropInternal[T](ll: List[T], f: T => Boolean): List[T] = {
       ll match {
-        case 
+        case Nil => Nil
+        case x :: Nil => if (f(x)) Nil else ll
+        case x :: xx => if (f(x)) dropInternal(xx, f) else x :: dropInternal(xx, f)
       }
     }
-    ll match {
-      case Nil => Nil
-      case x :: Nil => if (f(x)) Nil else ll
-      case x :: xx => if (f(x)) xx else
-    }
 
+    dropInternal(ll, f)
   }
 
-  print(drop(List(1,2,3,4,5), 2))
+  print(dropWhile[Int](List(1,2,3,4,5), _%2==0))
 }

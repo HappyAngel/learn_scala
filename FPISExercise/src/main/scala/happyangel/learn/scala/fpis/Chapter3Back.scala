@@ -22,11 +22,11 @@ object Chapter3Back extends App {
 
     // 3.10
     @annotation.tailrec
-    def foldRightTailRecur[A, B](as: List[A], z: B)(f: (A, B) => B): B = {
-        as match {
-            case Nil => z
-            case x :: xs => foldRightTailRecur(xs, f(x, z))(f)
-        }
+    def foldLeft[A, B](as: List[A], z: B)(f: (B, A) => B): B = {
+       as match {
+          case Nil => z
+          case x :: xs => foldLeft(xs, f(z, x))(f)
+       }
     }
 
     // 3.9
@@ -34,5 +34,23 @@ object Chapter3Back extends App {
         foldRight(as, 0)((_,y) => y+1)
     }
 
-    println(length(List(1,2,3,4,5,6,7,8)))
+    // 3.11
+    def sum(as: List[Int]): Int = {
+        foldLeft(as, 0)(_+_)
+    }
+
+    def product(as: List[Int]): Long = {
+        foldLeft(as, 0)(_*_)
+    }
+
+    def length2[A](as: List[A]): Int = {
+        foldLeft(as, 0)((y,_) => y+1)
+    }
+
+    // 3.12
+    def reverse[A](as: List[A]): List[A] = {
+       foldLeft(as, Nil: List[A])((ll, x) => x::ll)
+    }
+
+    println(reverse(List(1,2,3,4,5,6,7,8)))
 }
