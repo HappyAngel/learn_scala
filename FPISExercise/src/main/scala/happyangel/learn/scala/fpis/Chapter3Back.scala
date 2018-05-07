@@ -52,5 +52,91 @@ object Chapter3Back extends App {
        foldLeft(as, Nil: List[A])((ll, x) => x::ll)
     }
 
-    println(reverse(List(1,2,3,4,5,6,7,8)))
+    // 3.13
+    def foldLeftViaFoldRight[A, B](as: List[A], z: B)(f: (B, A) => B): B = {
+        foldRight(reverse(as), z)((a,b) => f(b,a))
+    }
+
+    // ??
+    def foldRightViaFoldLeft[A,B](as: List[A], z: B)(f: (A,B) => B): B = {
+        foldLeft(as, (b:B) => b)((g,a) => b => g(f(a,b)))(z)
+    }
+
+    // 3.14
+    def append[A](as: List[A], z: A): List[A] = {
+        foldRight(as, z::Nil)((a, b) => a::b)
+    }
+
+    // 3.15
+    def concate[A](before: List[A], after: List[A]): List[A] = {
+        foldRight(before, after)((a,b) => a::b)
+    }
+
+    def concateList[A](ll: List[List[A]]): List[A] = {
+        foldLeft(ll, Nil: List[A])(concate)
+    }
+
+    // 3.16
+    def add1(as: List[Int]): List[Int] = {
+       foldRight(as, Nil: List[Int])((a, b) => (a+1 :: b))
+    }
+
+    // 3.17
+    def doubleToStr(as: List[Double]): List[String] = {
+        foldRight(as, Nil: List[String])((a,b) => (a.toString :: b))
+    }
+
+    // 3.18
+    def map1[A, B](as: List[A])(f: A => B): List[B] = {
+        foldRight(as, Nil: List[B])((a,b) => (f(a)::b))
+    }
+
+    // use mutation method, it's not visible outside
+    def map_2[A,B](l: List[A])(f: A => B): List[B] = {
+        val buf = new collection.mutable.ListBuffer[B]
+        def go(l: List[A]): Unit = l match {
+            case Nil => ()
+            case h::t => buf += f(h); go(t)
+        }
+        go(l)
+        List(buf.toList: _*) // converting from the standard Scala list to the list we've defined here
+    }
+
+    // 3.19
+    def filter[A](as: List[A])(f: A => Boolean): List[A] = {
+        foldRight(as, Nil:List[A]){ (a,b) =>
+            if (f(a)) a::b else b
+        }
+    }
+
+    // 3.20
+    def flatMap[A, B](as: List[A])(f: A => List[B]): List[B] = {
+        foldRight(as, Nil: List[B])((a,b) => concate(f(a),b))
+    }
+
+    // 3.21
+    def filterViaFlatmap[A](as: List[A])(f: A => Boolean): List[A] = {
+        flatMap(as)(a => if (f(a)) a::Nil else Nil)
+    }
+
+    // 3.22
+    def addCorrespondList(as: List[Int], bs: List[Int]): List[Int] = {
+        (as, bs) match {
+            case (_, Nil) => Nil
+            case (Nil, _) => Nil
+            case (a::aa, b::bb) => (a+b) :: addCorrespondList(aa, bb)
+        }
+    }
+
+    def zipWith[A, B, C](as: List[A], bs: List[B])(f: (A, B) => C): List[C] = {
+        (as, bs) match {
+            case (_, Nil) => Nil
+            case (Nil, _) => Nil
+            case (a::aa, b::bb) => f(a,b) :: zipWith(aa,bb)(f)
+        }
+    }
+
+    // 3.23
+
+    println(addCorrespondList(List(1,2,3,4), List(2,3,4,5)))
 }
