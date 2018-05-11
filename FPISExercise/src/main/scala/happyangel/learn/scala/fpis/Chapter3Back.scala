@@ -3,6 +3,12 @@ package happyangel.learn.scala.fpis
 /**
   * Created by xionglei on 18-4-26.
   */
+
+
+sealed trait Tree[+A]
+case class Leaf[A](value: A) extends Tree[A]
+case class Branch[A](left: Tree[A], right: Tree[A]) extends Tree[A]
+
 object Chapter3Back extends App {
 
     def init[A](l: List[A]): List[A] = {
@@ -136,7 +142,71 @@ object Chapter3Back extends App {
         }
     }
 
-    // 3.23
+    // 3.25
+    def countNode[A](tree: Tree[A]): Int = {
+        tree match {
+               case _: Leaf[A] =>
+                   1
+               case b: Branch[A] =>
+                   countNode(b.left) + countNode(b.right)
+           }
+    }
 
-    println(addCorrespondList(List(1,2,3,4), List(2,3,4,5)))
+    // 3.26
+    def maxNodeValue(tree: Tree[Int]): Int = {
+        tree match {
+            case l: Leaf[Int] =>
+                l.value
+            case b: Branch[Int] =>
+                maxNodeValue(b.left) max maxNodeValue(b.right)
+        }
+    }
+
+    // 3.27
+    def depth[A](tree: Tree[A]): Int = {
+        tree match {
+            case _: Leaf[A] =>
+                1
+            case b: Branch[A] =>
+                (depth(b.left) max depth(b.right)) + 1
+        }
+    }
+
+    // 3.28
+    def mapTree[A, B](tree: Tree[A])(f: A => B): Tree[B] = {
+       tree match {
+           case l: Leaf[A] =>
+               Leaf(f(l.value))
+           case b: Branch[A] =>
+               Branch(mapTree(b.left)(f), mapTree(b.right)(f))
+       }
+    }
+
+    // 3.29
+    def foldTree[A, B](tree: Tree[A], z: B)(f: (B, A) => B): B = {
+        tree match {
+            case l: Leaf[A] =>
+                f(z, l.value)
+            case b: Branch[A] =>
+                foldTree(b.right, foldTree(b.left, z)(f))(f)
+        }
+    }
+
+    // 3.29-1
+    def mapTreeWithFold[A, B](tree: Tree[A])(f: A => B): Tree[B] = {
+        foldTree(tree, null: Tree[B]) { (b, a) =>
+            if (b == null)  {
+                Leaf(f(a))
+            } else {
+                Branch(b, Leaf(f(a)))
+            }
+        }
+    }
+
+    // 3.29 - 2
+    def depthWithFold[A](tree: Tree[A]): Int = {
+        foldTree(tree, 0)((b, _) => b+1 )
+    }
+
+    println(mapTree(Branch(Branch(Branch(Leaf(1), Leaf(2)), Leaf(2)), Branch(Leaf(3), Leaf(4))))(_+2))
 }
