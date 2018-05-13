@@ -148,7 +148,7 @@ object Chapter3Back extends App {
                case _: Leaf[A] =>
                    1
                case b: Branch[A] =>
-                   countNode(b.left) + countNode(b.right)
+                   countNode(b.left) + countNode(b.right) + 1
            }
     }
 
@@ -175,38 +175,39 @@ object Chapter3Back extends App {
     // 3.28
     def mapTree[A, B](tree: Tree[A])(f: A => B): Tree[B] = {
        tree match {
-           case l: Leaf[A] =>
-               Leaf(f(l.value))
+           case Leaf(a) =>
+               Leaf(f(a))
            case b: Branch[A] =>
                Branch(mapTree(b.left)(f), mapTree(b.right)(f))
        }
     }
 
     // 3.29
-    def foldTree[A, B](tree: Tree[A], z: B)(f: (B, A) => B): B = {
+    def foldTree[A, B](tree: Tree[A])(f: A => B)(g: (B,B) => B): B = {
         tree match {
-            case l: Leaf[A] =>
-                f(z, l.value)
-            case b: Branch[A] =>
-                foldTree(b.right, foldTree(b.left, z)(f))(f)
+            case Leaf(a) =>
+                f(a)
+            case Branch(l, r) =>
+                g(foldTree(l)(f)(g), foldTree(r)(f)(g))
         }
     }
 
     // 3.29-1
-    def mapTreeWithFold[A, B](tree: Tree[A])(f: A => B): Tree[B] = {
-        foldTree(tree, null: Tree[B]) { (b, a) =>
-            if (b == null)  {
-                Leaf(f(a))
-            } else {
-                Branch(b, Leaf(f(a)))
-            }
-        }
+    def sizeViaFold[A](t: Tree[A]): Int = {
+        foldTree(t)(_ => 1)(1 + _ + _)
     }
 
-    // 3.29 - 2
-    def depthWithFold[A](tree: Tree[A]): Int = {
-        foldTree(tree, 0)((b, _) => b+1 )
+    def maximumViaFold[A](t: Tree[Int]): Int = {
+        foldTree(t)(a=>a)(_ max _)
     }
 
-    println(mapTree(Branch(Branch(Branch(Leaf(1), Leaf(2)), Leaf(2)), Branch(Leaf(3), Leaf(4))))(_+2))
+    def depthViaFold[A](t: Tree[A]): Int = {
+        foldTree(t)(_=>1)(1 + _ max _)
+    }
+
+    def mapViaFold[A, B](t: Tree[A])(f: A => B): Tree[B] = {
+        foldTree(t)(a=> Leaf(f(a)):Tree[B])((a,b) => Branch(a,b))
+    }
+
+    println(sizeViaFold(Branch(Branch(Branch(Leaf(1), Leaf(2)), Leaf(2)), Branch(Leaf(3), Leaf(4)))))
 }
