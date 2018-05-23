@@ -23,7 +23,6 @@ abstract class Currency {
     amount + that.amount
   }
 }
-<<<<<<< HEAD
 
 object Converter {
     var exchangeRate = Map (

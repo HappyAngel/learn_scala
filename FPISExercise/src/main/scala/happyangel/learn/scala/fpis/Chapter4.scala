@@ -38,6 +38,7 @@ sealed trait MyOption[+A] {
         ob
     }
   }
+
   def filter(f: A => Boolean): MyOption[A] = {
     this match {
       case MySome(v) =>
@@ -48,11 +49,72 @@ sealed trait MyOption[+A] {
       case MyNone =>
         MyNone
     }
+
+    this flatMap { v =>
+      if (f(v))
+        MySome(v)
+      else
+        MyNone
+    }
   }
 }
 case class MySome[+A](get: A) extends MyOption[A]
 case object MyNone extends MyOption[Nothing]
 
-object Chapter4 {
+object Chapter4 extends App {
 
+  def mean(xs: Seq[Double]): Option[Double] = {
+    if (xs.isEmpty)
+      None
+    else
+      Some(xs.sum / xs.size)
+  }
+  def variance(xs: Seq[Double]): Option[Double] = {
+    mean(xs) flatMap { mm =>
+      mean(xs.map(x => math.pow(x-mm,2)))
+    }
+  }
+
+  def Try[A](a: => A): Option[A] = {
+    try Some(a)
+    catch { case _: Exception => None }
+  }
+
+  def map2[A, B, C](a: Option[A], b: Option[B])(f: (A, B) => C): Option[C] = {
+    for {
+      aa <- a
+      bb <- b
+    } yield {
+      f(aa,bb)
+    }
+  }
+
+  def sequence[A](a: List[Option[A]]): Option[List[A]] = {
+    if (a.exists(_.isEmpty)) {
+      None
+    } else {
+      Some(a.map(_.get))
+    }
+  }
+
+  def sequenceRur[A](a: List[Option[A]]): Option[List[A]] = {
+    a match {
+      case Nil =>
+        Some(Nil)
+      case h::t => h flatMap (hh => sequenceRur(t) map (hh::_))
+    }
+  }
+
+  def sequenceViaFold[A](a: List[Option[A]]): Option[List[A]] = {
+    a.foldRight[Option[List[A]]](Some(Nil))((a, b) => map2(a,b)(_::_))
+  }
+
+  def traverse[A, B](a: List[A])(f: A => Option[B]): Option[List[B]] = {
+    a match {
+      case Nil => Some(Nil)
+      case h::t => f(h) flatMap (hh => traverse(t)(f) map(hh::_))
+    }
+  }
+
+  println(traverse[String, Int](List("2", "3", "sdd", "5"))(b=>Try(b.toInt)))
 }
