@@ -1,4 +1,4 @@
-package fpis
+package happyangel.learn.scala.fpis
 
 /**
   * Created by xionglei on 2018/4/23.
