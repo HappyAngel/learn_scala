@@ -22,5 +22,5 @@ object Chapter2 extends App {
     }
 
 
-    println(fib(5))
+    println(302002000 < 303000000)
 }

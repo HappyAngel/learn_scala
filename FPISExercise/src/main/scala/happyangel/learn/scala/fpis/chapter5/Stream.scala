@@ -33,7 +33,7 @@ sealed trait Stream[+A] {
         newStream
       else {
         old match {
-          case Cons(h, t) => func(n - 1, t(), Cons(h, () => newStream))
+          case Cons(h, t) => func(n - 1, t(), Stream.cons(h(), newStream))
           case _ => newStream
         }
       }
@@ -48,9 +48,35 @@ sealed trait Stream[+A] {
   }
 
   def takeWhile(p: A => Boolean): Stream[A] = this match {
-    case Cons(h, t) if p(h()) => Cons(h, () => t().takeWhile(p))
+    case Cons(h, t) if p(h()) => Stream.cons(h(), t().takeWhile(p))
     case _ => Empty
   }
+
+  def takeWhileByFoldright(p: A => Boolean): Stream[A] = {
+      foldRight(Stream[A]())((a,b) =>
+          if (p(a))
+              Stream.cons(a, b)
+          else
+              Empty
+      )
+  }
+
+  def foldRight[B](z: => B)(f: (A, => B) => B): B = {
+      this match {
+          case Cons(h, t) => f(h(), t().foldRight(z)(f))
+          case _ => z
+      }
+  }
+
+  def exists(p: A => Boolean): Boolean = {
+      foldRight(false)((a,b) => p(a) || b)
+  }
+
+  def forAll(p: A => Boolean): Boolean = {
+      foldRight(true)((a,b) => p(a) && b)
+  }
+
+
 }
 
 case object Empty extends Stream[Nothing]
