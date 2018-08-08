@@ -1,6 +1,6 @@
 package happyangel.learn.scala.fpis.chapter7
 
-import java.util.concurrent.{Callable, ExecutorService, Future, TimeUnit}
+import java.util.concurrent._
 
 import happyangel.learn.scala.fpis.chapter7.Par.Par
 
@@ -8,8 +8,12 @@ import happyangel.learn.scala.fpis.chapter7.Par.Par
   * Created by xionglei on 2018/7/29.
   */
 
+sealed trait AsyncFuture[A] {
+    private[chapter7] def apply(k: A => Unit): Unit
+}
+
 object Par {
-    type Par[T] = ExecutorService => Future[T]
+    type Par[+T] = ExecutorService => AsyncFuture[T]
 
     private case class UnitFuture[T](get: T) extends Future[T] {
         def isDone: Boolean = true
@@ -31,6 +35,10 @@ object Par {
         es => es.submit(new Callable[T] {
             def call = a(es).get
         })
+    }
+
+    def delay[T](a: => Par[T]): Par[T] = {
+        es => a(es)
     }
 
     def map2[A, B, C](a: Par[A], b: Par[B])(f: (A,B) => C): Par[C] = {
@@ -69,5 +77,15 @@ object test extends App {
             Par.lazyUnit(f(a))
         }
     }
+
+    def hugeCompute = {
+        for (i <- 1 to Int.MaxValue) {
+            print(Thread.currentThread().getName)
+            Thread.sleep(1000)
+        }
+    }
+
+    print(Thread.currentThread().getName)
+    Par.fork(Par.unit(hugeCompute))(Executors.newFixedThreadPool(1)).get
 }
 
