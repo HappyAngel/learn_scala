@@ -6,7 +6,7 @@ import java.util.concurrent.atomic.AtomicReference
 import happyangel.learn.scala.fpis.chapter7.Par.Par
 
 /**
-  * Created by xionglei on 2018/7/29.
+  * Created by happyangel on 2018/7/29.
   */
 
 sealed trait AsyncFuture[A] {

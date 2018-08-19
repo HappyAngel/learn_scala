@@ -1,7 +1,7 @@
 package happyangel.learn.scala.fpis.chapter6
 
 /**
-  * Created by xionglei on 2018/7/15.
+  * Created by happyangel on 2018/7/15.
   */
 case class State[S, +A](run: S => (A, S)) {
   import State._

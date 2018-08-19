@@ -18,12 +18,18 @@ case class SimpleRNG(seed: Long) extends RNG {
   }
 }
 
-object test extends App {
+object testRNG extends App {
   type Rand[+A] = RNG => (A, RNG)
 
   def nonNegativeInt(rng: RNG): (Int, RNG) = {
     val (i, r) = rng.nextInt
     (if (i < 0) -(i+1) else i, r)
+  }
+
+  def boolean(rng: RNG): (Boolean, RNG) = {
+    rng.nextInt match {
+      case (i, rng2) => (i%2==0, rng2)
+    }
   }
 
   def double(rng: RNG): (Double, RNG) = {
