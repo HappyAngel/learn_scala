@@ -35,5 +35,6 @@ object CandyMachine extends App {
   }
 
 
-  print(simulateMachine(List(Coin, Turn, Coin, Turn, Coin, Turn, Coin, Turn)).run(Machine(true, 5, 10)))
+
+  print(DateTime)
 }
